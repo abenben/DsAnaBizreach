@@ -1,3 +1,4 @@
-output/*
+output/output_image_*
+output/data.csv
 venv/bin
 venv/lib

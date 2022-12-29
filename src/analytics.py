@@ -6,6 +6,8 @@ from selenium.webdriver.common.by import By
 import pandas as pd
 import os
 
+from selenium.webdriver.support.wait import WebDriverWait
+
 
 class DsScrapingFromBizreach():
 
@@ -55,7 +57,7 @@ class DsScrapingFromBizreach():
 
         # BIZREACHのサイトを開く
         self.driver.get("https://cr-support.jp/")
-        self.driver.set_window_size(1590, 993)
+        self.driver.set_window_size(1024, 600)
 
         # メールとパスワードを指定してログインする
         self.driver.find_element(By.NAME, "mailAddress").send_keys(self.account_mailaddress)
@@ -67,10 +69,26 @@ class DsScrapingFromBizreach():
         self.driver.find_element(By.ID, "jsi-gnav-search").click()
         self.driver.find_element(By.NAME, "pstNm").click()
         self.driver.find_element(By.NAME, "pstNm").send_keys("データサイエンティスト")
-        # self.driver.find_element(By.NAME, "at").click()
 
         # 一番最初の候補者の詳細をクリックする
         self.driver.find_element(By.CSS_SELECTOR, ".bdMidlT:nth-child(1) .jsc-resume-search-button").click()
+
+        # 次の100件（101件から200件）
+        next1 = self.driver.find_element(By.XPATH, ".//a[contains(text(), '次の100件')]")
+        next1.click()
+
+        # 次の100件（201件から300件）
+        next1 = self.driver.find_element(By.XPATH, ".//a[contains(text(), '次の100件')]")
+        next1.click()
+
+        # 次の100件（301件から400件）
+        next1 = self.driver.find_element(By.XPATH, ".//a[contains(text(), '次の100件')]")
+        next1.click()
+
+        # 次の100件（400件から484件）
+        next1 = self.driver.find_element(By.XPATH, ".//a[contains(text(), '次の100件')]")
+        next1.click()
+
         ul = self.driver.find_element(By.XPATH, ".//ul[@id='jsi_resume_block']")
         ul.find_elements(By.XPATH, "li")[0].click()
 
@@ -82,10 +100,9 @@ class DsScrapingFromBizreach():
             print(f"* {df_index + 1}件目")
             print("*" * 40)
 
-            self.driver.save_screenshot(f'./output/output_image_{df_index + 1}.png')
-
             try:
                 section = self.driver.find_element(By.XPATH, ".//section[@id='jsi_resume_detail']")
+                self.driver.save_screenshot(f'./output/output_image_{df_index + 1}.png')
 
                 id = section.find_element(By.XPATH, "..//h2[@class='fl mr10']").text
                 self.df.loc[df_index, 'ID'] = id
@@ -194,16 +211,18 @@ class DsScrapingFromBizreach():
 
             sleep(0.1)
 
-            # if df_index >= 5:
-            #    break
-
             df_index += 1
-            self.driver.find_element(By.LINK_TEXT, "次へ »").click()
 
+            #if df_index >= 100:
+            if df_index >= 84:
+                    return
+
+            btns = self.driver.find_elements(By.LINK_TEXT, "次へ »")
+            btns[0].click()
 
 if __name__ == '__main__':
-
     t = DsScrapingFromBizreach()
+
     try:
         t.run()
     except Exception as e:
