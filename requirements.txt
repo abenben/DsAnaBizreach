@@ -1,3 +1,4 @@
 chromedriver-binary==108.0.5359.71.0
 pandas==1.5.2
 selenium==4.7.2
+jupyter==1.0.0
